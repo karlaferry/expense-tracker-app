@@ -21,8 +21,8 @@ export default function Home() {
     const localStorageData: any = localStorage.getItem("expenses_data");
     if (localStorageData) {
       setExpenseData(JSON.parse(localStorageData));
-      setIsLoading(false);
     }
+    setIsLoading(false);
   }, []);
 
   const totalExpenses =

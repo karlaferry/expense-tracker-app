@@ -25,7 +25,7 @@ export default function Form({ addExpense }: Props) {
     date: 0,
     description: "",
     amount: 0,
-    category: "",
+    category: "DEFAULT",
   });
   const [errorMsg, setErrorMsg] = useState("");
   const handleSubmit = (e: FormEvent) => {
@@ -35,6 +35,13 @@ export default function Form({ addExpense }: Props) {
     } else {
       setErrorMsg("");
       addExpense({ ...expense, date: Date.now() });
+      setExpense({
+        id: 0,
+        date: 0,
+        description: "",
+        amount: 0,
+        category: "DEFAULT",
+      });
     }
   };
 
@@ -63,7 +70,7 @@ export default function Form({ addExpense }: Props) {
             type="number"
             className="grow"
             required
-            value={expense.amount}
+            value={expense.amount === 0 ? "" : expense.amount}
             onChange={(e) =>
               setExpense({ ...expense, amount: parseInt(e.target.value) })
             }
@@ -72,7 +79,7 @@ export default function Form({ addExpense }: Props) {
         <select
           className="select select-primary w-full max-w-xs my-4"
           required
-          defaultValue={"DEFAULT"}
+          value={expense.category}
           onChange={(e) => setExpense({ ...expense, category: e.target.value })}
         >
           <option disabled value="DEFAULT">

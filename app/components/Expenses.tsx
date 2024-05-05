@@ -11,15 +11,20 @@ interface ExpenseData {
 interface Props {
   expenseData: ExpenseData[];
   onDelete: (id: number) => void;
+  isLoading: boolean;
 }
-export default function Expenses({ expenseData, onDelete }: Props) {
+export default function Expenses({ expenseData, onDelete, isLoading }: Props) {
   return (
     <div>
       <div className="flex items-center gap-2 mt-14">
         <RiAlignItemBottomFill size={30} />
         <h1 className="text-2xl font-black">Record</h1>
       </div>
-      <ExpensesList expenseData={expenseData} onDelete={onDelete} />
+      {!isLoading ? (
+        <ExpensesList expenseData={expenseData} onDelete={onDelete} />
+      ) : (
+        <span className="loading loading-dots loading-lg my-4"></span>
+      )}
     </div>
   );
 }

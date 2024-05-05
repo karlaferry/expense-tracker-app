@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Expenses from "./components/Expenses";
 import Form from "./components/Form";
 import Header from "./components/Header";
@@ -13,49 +13,55 @@ interface Expense {
 }
 
 export default function Home() {
-  const [expenseData, setExpenseData] = useState<Expense[]>([
-    {
-      id: 1,
-      date: 1714768376781,
-      description: "Kobo Libra Colour",
-      amount: 200,
-      category: "Culture",
-    },
-    {
-      id: 2,
-      date: 1714768376799,
-      description: "Kobo Stylus 2",
-      amount: 70,
-      category: "Culture",
-    },
-  ]);
+  const [expenseData, setExpenseData] = useState<Expense[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const totalExpenses = expenseData.reduce(
-    (acc, currentItem) => acc + currentItem.amount,
-    0
-  );
+  useEffect(() => {
+    setIsLoading(true);
+    const localStorageData: any = localStorage.getItem("expenses_data");
+    if (localStorageData) {
+      setExpenseData(JSON.parse(localStorageData));
+      setIsLoading(false);
+    }
+  }, []);
 
+  const totalExpenses =
+    expenseData && expenseData.length > 0
+      ? expenseData.reduce((acc, currentItem) => acc + currentItem.amount, 0)
+      : 0;
   const onDelete = (id: number) => {
     const newExpenseData = expenseData.filter((expense) => expense.id !== id);
     setExpenseData(newExpenseData);
+    localStorage.setItem("expenses_data", JSON.stringify(newExpenseData));
   };
 
   return (
     <div className="my-10 max-w-screen-sm flex flex-col mx-auto px-10">
       <div>
         <Header />
-        <Stats totalExpenses={totalExpenses} />
+        <Stats totalExpenses={totalExpenses} isLoading={isLoading} />
         <Form
           addExpense={(expense: Expense) =>
-            setExpenseData([
-              { ...expense, id: expenseData.length + 1 },
-              ...expenseData,
-            ])
+            setExpenseData(() => {
+              const newExpenses = [
+                { ...expense, id: expenseData.length + 1 },
+                ...expenseData,
+              ];
+              localStorage.setItem(
+                "expenses_data",
+                JSON.stringify(newExpenses)
+              );
+              return newExpenses;
+            })
           }
         />
       </div>
       <div>
-        <Expenses expenseData={expenseData} onDelete={onDelete} />
+        <Expenses
+          expenseData={expenseData}
+          onDelete={onDelete}
+          isLoading={isLoading}
+        />
       </div>
     </div>
   );
